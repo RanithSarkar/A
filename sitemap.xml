@@ -5,22 +5,22 @@
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
                   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 <url>
-  <loc>https://ranithsarkar.github.io/A/</loc>
+  <loc>https://ranithsarkar.com</loc>
   <lastmod>2023-06-01T06:29:29+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
-  <loc>https://ranithsarkar.github.io/A/resume</loc>
+  <loc>https://ranithsarkar.com/resume</loc>
   <lastmod>2023-06-01T06:29:29+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://ranithsarkar.github.io/A/contact</loc>
+  <loc>https://ranithsarkar.com/contact</loc>
   <lastmod>2023-06-01T06:29:29+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://ranithsarkar.github.io/A/project</loc>
+  <loc>https://ranithsarkar.com/project</loc>
   <lastmod>2023-06-01T06:29:29+00:00</lastmod>
   <priority>0.80</priority>
 </url>
