@@ -1,1 +1,2 @@
+Redirect 301 /facebook https://facebook.com/
 ErrorDocument 404 /404.html
