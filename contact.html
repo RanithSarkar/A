@@ -1,61 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Contact Me</title>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="Ranith Sarkar">
-        <link rel="icon" href="Page_logo.webp">
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet" href="chat.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
-    </head>
-    <body>
-       <!-- header -->
-       <div class="header">
-           <img class="name-logo" src="name_logo.webp" alt="logo">
-           <img onclick="clicked()" class="manu-icon" src="manu_icon.webp" alt="manu">
-           <div class="manu">
-               <img onclick="clicked1()" class="close" src="close.webp" alt="close">
-               <a class="homeAnchar HA" href="https://ranithsarkar.github.io/A/">
-                   <img class="homeImage" src="Home_icon.webp" alt="home"><b class="homeLeter">Home</b>
-               </a>
-               <a class="resumeAnchar homeAnchar" href="resume">
-                   <img class="resumeImage" src="Resume.webp" alt="resume"><b class="homeLeter">Resume</b>
-               </a>
-               <a class="contactAnchar homeAnchar" href="contact">
-                   <img class="homeImage" src="Contact.webp" alt="contact"><b class="homeLeter">Contact Me</b>
-               </a>
-               <a class="projectAnchar homeAnchar" href="project">
-                   <img class="resumeImage" src="Project.webp" alt="project"><b class="homeLeter">My Projects</b>
-               </a>
-           </div>
-       </div>               
-       <!-- body -->
-       <div class="contact">
-           <p class="contact0">Contact Me</p>
-           <p class="contact1">Never hesitate to contact me. I am eagerly waiting for your message.</p>
-       </div>
-       <div class="container">
-           <form onsubmit="sendEmail(); reset(); return false;">
-              <p class="GIT">Get In Touch</p>
-              <input type="text" id="name" placeholder="&nbsp;&nbsp;Name" required>
-              <input type="email" id="email" placeholder="&nbsp;&nbsp;Email" required>
-              <input type="number" id="phone" placeholder="&nbsp;&nbsp;Phone Number" required>
-              <input type="text" id="message" placeholder="&nbsp;&nbsp;Type Your Message" required>
-              <div class="submit0">
-                  <button type="submit" id="submit">Submit</button>
-              </div>
-           </form>
-       </div>
-       <!-- google form -->
-       <div class="ggl"></div>
-       <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSciJw85WT7qP7DE6YSLUMYDV-IkSiTqlO_qCMEkI2nsXccfUg/viewform?usp=sf_link"></iframe>
-       
-       <script src="index1.js"></script>
-       <script src="https://smtpjs.com/v3/smtp.js"></script>
-       <script src="chat.js"></script>
-   </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Contact Me</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ranith Sarkar">
+    <link rel="icon" href="Page_logo.webp">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chat.css">
+
+    <!-- font for "Get In Touch" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <img class="name-logo" src="name_logo.webp">
+        <img onclick="clicked()" class="manu-icon" src="manu_icon.webp">
+
+        <div class="manu">
+            <img onclick="clicked1()" class="close" src="close.webp">
+
+            <a class="homeAnchar HA" href="index.html">
+                <img class="homeImage" src="Home_icon.webp"><b class="homeLeter">Home</b>
+            </a>
+
+            <a class="resumeAnchar homeAnchar" href="resume.html">
+                <img class="resumeImage" src="Resume.webp"><b class="homeLeter">Resume</b>
+            </a>
+
+            <a class="contactAnchar homeAnchar" href="chat.html">
+                <img class="homeImage" src="Contact.webp"><b class="homeLeter">Contact Me</b>
+            </a>
+
+            <a class="projectAnchar homeAnchar" href="project.html">
+                <img class="resumeImage" src="Project.webp"><b class="homeLeter">My Projects</b>
+            </a>
+        </div>
+    </div>
+
+    <!-- Body Heading -->
+    <div class="contact">
+        <p class="contact0">Contact Me</p>
+        <p class="contact1">Never hesitate to contact me. I am eagerly waiting for your message.</p>
+    </div>
+
+
+    <!-- Contact Form (Connected to Google Form) -->
+    <div class="container">
+
+        <form
+            action="https://docs.google.com/forms/d/e/1FAIpQLSciJw85WT7qP7DE6YSLUMYDV-IkSiTqlO_qCMEkI2nsXccfUg/formResponse"
+            method="POST"
+            target="_self"
+        >
+
+            <p class="GIT">Get In Touch</p>
+
+            <input
+                type="text"
+                id="name"
+                name="entry.430236748"
+                placeholder="  Name"
+                required
+            >
+
+            <input
+                type="email"
+                id="email"
+                name="emailAddress"
+                placeholder="  Email"
+                required
+            >
+
+            <input
+                type="tel"
+                id="phone"
+                name="entry.1624063566"
+                placeholder="  Phone Number"
+                required
+            >
+
+            <input
+                type="text"
+                id="message"
+                name="entry.1920630596"
+                placeholder="  Type Your Message"
+                required
+            >
+
+            <!-- Required hidden Google params -->
+            <input type="hidden" name="fvv" value="1">
+            <input type="hidden" name="fbzx" value="-5836221484210133330">
+            <input type="hidden" name="pageHistory" value="0">
+
+            <div class="submit0">
+                <button type="submit" id="submit">Submit</button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="index.js"></script>
+
+</body>
 </html>
