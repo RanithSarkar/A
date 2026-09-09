@@ -487,33 +487,17 @@ function getValidAmount() {
 // ============================================
 
 function createUpiUrl(amount) {
+    const transactionRef =
+        "TXN" + Date.now();
 
-    /*
-     * Create a NEW transaction reference
-     * for every payment attempt.
-     */
-
-    currentTransactionRef =
-        generateTransactionRef();
-
-
-    const params = new URLSearchParams();
-
-    params.set("pa", UPI_ID);
-    params.set("pn", UPI_NAME);
-
-    // Unique transaction reference
-    params.set("tr", currentTransactionRef);
-
-    // Payment description
-    params.set("tn", "Payment");
-
-    // Amount
-    params.set("am", amount.toFixed(2));
-
-    // Currency
-    params.set("cu", "INR");
-
+    const params = new URLSearchParams({
+        pa: "ranithsarkar@upi",
+        pn: "RANITH SARKAR",
+        tr: transactionRef,
+        tn: "Payment",
+        am: amount.toFixed(2),
+        cu: "INR"
+    });
 
     return "upi://pay?" + params.toString();
 }
