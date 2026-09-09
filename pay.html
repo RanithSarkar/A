@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ranith Sarkar</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description"
+        content="Ranith Sarkar is a Driven and Talented Web Developer with a Passion for Creating Engaging Online Experiences">
+    <meta name="keywords" content="Ranith Sarkar,Ranith,Ronit,Ronith,Ranit">
+    <meta name="author" content="Ranith Sarkar">
+    <link rel="icon" href="Page_logo.webp">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .amount-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+
+            /* Hide Firefox number arrows */
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        /* Hide Chrome, Edge, Safari number arrows */
+        .amount-input::-webkit-outer-spin-button,
+        .amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .amount-input:focus {
+            border-color: #111;
+        }
+
+        .pay-button,
+        .try-again {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: #111;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .pay-button:hover,
+        .try-again:hover {
+            opacity: 0.9;
+        }
+
+        .upi-id {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .error {
+            color: #d00;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        /* QR section */
+        #qrSection {
+            display: none;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        #qrCode {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        #qrCode img,
+        #qrCode canvas {
+            max-width: 220px;
+            max-height: 220px;
+        }
+
+        .qr-amount {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .qr-instruction {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .close-qr {
+            margin-top: 15px;
+            padding: 10px 18px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Countdown */
+        #countdownSection {
+            display: none;
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f5f5f5;
+        }
+
+        .countdown-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        #countdown {
+            font-size: 30px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        /* Payment finished message */
+        #finishedSection {
+            display: none;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .finished-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .finished-message {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .header{
+            top:0;
+            position:fixed;
+        }
+
+
+        /* Make the complete payment card slightly smaller on desktop */
+        @media (min-width: 769px) {
+            .card {
+                transform: scale(0.80);
+                transform-origin: center center;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&amp;display=swap" rel="stylesheet">
+    <meta name="google-site-verification" content="61Gi0LePcrJGe2Bxpzm8A2c8fzejx25tXXYuL3DH2iY" />
+</head>
+
+<body>
+    <!-- header -->
+    <div class="header">
+        <img class="name-logo" src="name_logo.webp" alt="Ranith">
+        <img onclick="clicked()" class="manu-icon" src="manu_icon.webp" alt="manu">
+        <div class="manu">
+            <img onclick="clicked1()" class="close" src="close.webp" alt="manu close">
+            <a class="homeAnchar HA" href="https://ranithsarkar.github.io/A/">
+                <img class="homeImage" src="Home_icon.webp" alt="home"><b class="homeLeter">Home</b>
+            </a>
+            <a class="resumeAnchar homeAnchar" href="resume">
+                <img class="resumeImage" src="Resume.webp" alt="resume"><b class="homeLeter">Resume</b>
+            </a>
+            <a class="contactAnchar homeAnchar" href="contact">
+                <img class="homeImage" src="Contact.webp" alt="contact"><b class="homeLeter">Contact Me</b>
+            </a>
+            <a class="projectAnchar homeAnchar" href="project">
+                <img class="resumeImage" src="Project.webp" alt="projects"><b class="homeLeter">My Projects</b>
+            </a>
+        </div>
+        <a href="contact"><img class="chat" src="Chat.webp" alt="contact"></a>
+    </div>
+
+
+    <!-- body -->
+
+
+    <div class="card">
+
+        <div id="paymentSection">
+
+            <h1>Make a Payment</h1>
+
+            <p>
+                Enter the amount you want to pay.
+            </p>
+
+            <input type="number" id="amount" class="amount-input" placeholder="Enter amount ₹" min="1" max="100000"
+                step="any" inputmode="decimal">
+
+            <div id="error" class="error">
+                Please enter an amount between ₹1 and ₹100,000.
+            </div>
+
+            <a id="payButton" class="pay-button" href="#">
+                Pay with UPI
+            </a>
+
+            <div class="upi-id">
+                UPI ID: ranithsarkar@upi
+            </div>
+
+            <!-- Desktop QR section -->
+            <div id="qrSection">
+
+                <div class="qr-amount" id="qrAmount"></div>
+
+                <div id="qrCode"></div>
+
+                <div class="qr-instruction">
+                    Scan this QR code using any UPI app
+                    on your phone to make the payment.
+                </div>
+
+                <button type="button" class="close-qr" id="closeQr">
+                    Change Amount
+                </button>
+
+            </div>
+
+            <!-- Countdown -->
+            <div id="countdownSection">
+
+                <div class="countdown-label">
+                    Payment window
+                </div>
+
+                <div id="countdown">
+                    01:00
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Message shown after countdown -->
+        <div id="finishedSection">
+
+            <div class="finished-title">
+                Thank you!
+            </div>
+
+            <div class="finished-message">
+                If you have completed the payment, thank you for your payment.
+                If you haven't made the payment yet, you can try again below.
+            </div>
+
+            <button type="button" class="try-again" id="tryAgain">
+                Try Again
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+
+    <script src="index.js"></script>
+
+
+
+
+
+    <!-- QR Code library -->
+    <script src="qrcode.min.js"></script>
+
+    <script>
+
+        const amountInput = document.getElementById("amount");
+        const payButton = document.getElementById("payButton");
+        const error = document.getElementById("error");
+
+        const qrSection = document.getElementById("qrSection");
+        const qrCode = document.getElementById("qrCode");
+        const qrAmount = document.getElementById("qrAmount");
+        const closeQr = document.getElementById("closeQr");
+
+        const countdownSection =
+            document.getElementById("countdownSection");
+
+        const countdown =
+            document.getElementById("countdown");
+
+        const paymentSection =
+            document.getElementById("paymentSection");
+
+        const finishedSection =
+            document.getElementById("finishedSection");
+
+        const tryAgain =
+            document.getElementById("tryAgain");
+
+
+        let countdownTimer = null;
+        let timeLeft = 60;
+
+
+        /*
+         * Detect whether the user is on a mobile device.
+         */
+        function isMobileDevice() {
+
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+                .test(navigator.userAgent);
+
+        }
+
+
+        /*
+         * Round UP to exactly 2 decimal places.
+         */
+        function ceilToTwoDecimals(value) {
+
+            return Math.ceil(
+                (value + Number.EPSILON) * 100
+            ) / 100;
+
+        }
+
+
+        /*
+         * Create the UPI payment URL.
+         */
+        function createUpiUrl(amount) {
+
+            return (
+                "upi://pay" +
+                "?pa=" + encodeURIComponent("ranithsarkar@upi") +
+                "&pn=" + encodeURIComponent("RANITH SARKAR") +
+                "&am=" + encodeURIComponent(amount.toFixed(2)) +
+                "&cu=INR" +
+                "&mode=01" +
+                "&ver=01" +
+                "&txntype=pay" +
+                "&qrmedium=02"
+            );
+
+        }
+
+
+        /*
+         * Start 1-minute countdown.
+         */
+        function startCountdown() {
+
+            clearInterval(countdownTimer);
+
+            timeLeft = 60;
+
+            updateCountdown();
+
+            countdownSection.style.display = "block";
+
+            countdownTimer = setInterval(function () {
+
+                timeLeft--;
+
+                updateCountdown();
+
+                if (timeLeft <= 0) {
+
+                    clearInterval(countdownTimer);
+
+                    showFinishedMessage();
+
+                }
+
+            }, 1000);
+
+        }
+
+
+        /*
+         * Update countdown display.
+         */
+        function updateCountdown() {
+
+            const minutes =
+                Math.floor(timeLeft / 60)
+                    .toString()
+                    .padStart(2, "0");
+
+            const seconds =
+                (timeLeft % 60)
+                    .toString()
+                    .padStart(2, "0");
+
+            countdown.textContent =
+                minutes + ":" + seconds;
+
+        }
+
+
+        /*
+         * Show final message after 1 minute.
+         */
+        function showFinishedMessage() {
+
+            countdownSection.style.display = "none";
+
+            paymentSection.style.display = "none";
+
+            finishedSection.style.display = "block";
+
+        }
+
+
+        /*
+         * Pay button.
+         */
+        payButton.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            let amount = parseFloat(amountInput.value);
+
+
+            // Check whether amount is a number.
+            if (isNaN(amount)) {
+
+                error.textContent =
+                    "Please enter a valid amount between ₹1 and ₹100,000.";
+
+                error.style.display = "block";
+
+                return;
+
+            }
+
+
+            // Round UP to 2 decimal places.
+            amount = ceilToTwoDecimals(amount);
+
+
+            // Check minimum and maximum AFTER rounding.
+            if (amount < 1 || amount > 100000) {
+
+                error.textContent =
+                    "Amount must be between ₹1 and ₹100,000.";
+
+                error.style.display = "block";
+
+                return;
+
+            }
+
+
+            // Update input with rounded value.
+            amountInput.value =
+                amount.toFixed(2);
+
+            error.style.display = "none";
+
+
+            // Create UPI URL.
+            const upiUrl =
+                createUpiUrl(amount);
+
+
+            /*
+             * Start the 1-minute countdown.
+             */
+            startCountdown();
+
+
+            /*
+             * MOBILE:
+             * Open the UPI application.
+             */
+            if (isMobileDevice()) {
+
+                window.location.href =
+                    upiUrl;
+
+                return;
+
+            }
+
+
+            /*
+             * DESKTOP:
+             * Show QR code.
+             */
+            qrCode.innerHTML = "";
+
+            qrAmount.textContent =
+                "Pay ₹" + amount.toFixed(2);
+
+            new QRCode(qrCode, {
+
+                text: upiUrl,
+                width: 220,
+                height: 220,
+                correctLevel: QRCode.CorrectLevel.M
+
+            });
+
+            qrSection.style.display =
+                "block";
+
+        });
+
+
+        /*
+         * Hide QR and allow user to change amount.
+         */
+        closeQr.addEventListener("click", function () {
+
+            qrSection.style.display =
+                "none";
+
+            amountInput.focus();
+
+        });
+
+
+        /*
+         * Try Again button.
+         * Resets everything and starts over.
+         */
+        tryAgain.addEventListener("click", function () {
+
+            clearInterval(countdownTimer);
+
+            finishedSection.style.display =
+                "none";
+
+            paymentSection.style.display =
+                "block";
+
+            qrSection.style.display =
+                "none";
+
+            countdownSection.style.display =
+                "none";
+
+            qrCode.innerHTML = "";
+
+            amountInput.value = "";
+
+            error.style.display =
+                "none";
+
+            amountInput.focus();
+
+        });
+
+
+        /*
+         * Hide error while typing.
+         */
+        amountInput.addEventListener("input", function () {
+
+            error.style.display =
+                "none";
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
