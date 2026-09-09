@@ -329,298 +329,391 @@
 
     <script>
 
-        const amountInput = document.getElementById("amount");
-        const payButton = document.getElementById("payButton");
-        const error = document.getElementById("error");
+const amountInput = document.getElementById("amount");
+const payButton = document.getElementById("payButton");
+const error = document.getElementById("error");
 
-        const qrSection = document.getElementById("qrSection");
-        const qrCode = document.getElementById("qrCode");
-        const qrAmount = document.getElementById("qrAmount");
-        const closeQr = document.getElementById("closeQr");
+const qrSection = document.getElementById("qrSection");
+const qrCode = document.getElementById("qrCode");
+const qrAmount = document.getElementById("qrAmount");
+const closeQr = document.getElementById("closeQr");
 
-        const countdownSection =
-            document.getElementById("countdownSection");
+const countdownSection = document.getElementById("countdownSection");
+const countdown = document.getElementById("countdown");
 
-        const countdown =
-            document.getElementById("countdown");
+const paymentSection = document.getElementById("paymentSection");
+const finishedSection = document.getElementById("finishedSection");
+const tryAgain = document.getElementById("tryAgain");
 
-        const paymentSection =
-            document.getElementById("paymentSection");
+const MIN_AMOUNT = 1;
+const MAX_AMOUNT = 100000;
+const COUNTDOWN_SECONDS = 60;
 
-        const finishedSection =
-            document.getElementById("finishedSection");
-
-        const tryAgain =
-            document.getElementById("tryAgain");
-
-
-        let countdownTimer = null;
-        let timeLeft = 60;
+let countdownTimer = null;
+let countdownEndTime = null;
 
 
-        /*
-         * Detect whether the user is on a mobile device.
-         */
-        function isMobileDevice() {
+/* --------------------------------
+   Detect mobile device
+--------------------------------- */
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+        .test(navigator.userAgent);
+}
 
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-                .test(navigator.userAgent);
 
+/* --------------------------------
+   Show error
+--------------------------------- */
+function showError(message) {
+    error.textContent = message;
+    error.style.display = "block";
+}
+
+
+/* --------------------------------
+   Hide error
+--------------------------------- */
+function hideError() {
+    error.style.display = "none";
+}
+
+
+/* --------------------------------
+   Get and validate amount
+--------------------------------- */
+function getValidAmount() {
+    const rawValue = amountInput.value.trim();
+
+    if (rawValue === "") {
+        showError("Please enter an amount between ₹1 and ₹100,000.");
+        return null;
+    }
+
+    const amount = Number(rawValue);
+
+    if (!Number.isFinite(amount)) {
+        showError("Please enter a valid amount between ₹1 and ₹100,000.");
+        return null;
+    }
+
+    if (amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
+        showError("Amount must be between ₹1 and ₹100,000.");
+        return null;
+    }
+
+    // Allow maximum 2 decimal places.
+    const decimalPart = rawValue.split(".")[1];
+
+    if (decimalPart && decimalPart.length > 2) {
+        showError("Please enter an amount with maximum 2 decimal places.");
+        return null;
+    }
+
+    return amount;
+}
+
+
+/* --------------------------------
+   Create UPI payment URL
+--------------------------------- */
+function createUpiUrl(amount) {
+    return (
+        "upi://pay" +
+        "?pa=" + encodeURIComponent("ranithsarkar@upi") +
+        "&pn=" + encodeURIComponent("RANITH SARKAR") +
+        "&am=" + encodeURIComponent(amount.toFixed(2)) +
+        "&cu=INR" +
+        "&mode=01" +
+        "&ver=01" +
+        "&txntype=pay" +
+        "&qrmedium=02"
+    );
+}
+
+
+/* --------------------------------
+   Update countdown display
+--------------------------------- */
+function updateCountdown() {
+    if (!countdownEndTime) {
+        return;
+    }
+
+    const remainingMs = Math.max(
+        0,
+        countdownEndTime - Date.now()
+    );
+
+    const remainingSeconds = Math.ceil(
+        remainingMs / 1000
+    );
+
+    const minutes = Math.floor(remainingSeconds / 60)
+        .toString()
+        .padStart(2, "0");
+
+    const seconds = (remainingSeconds % 60)
+        .toString()
+        .padStart(2, "0");
+
+    countdown.textContent = `${minutes}:${seconds}`;
+
+    if (remainingSeconds <= 0) {
+        stopCountdown();
+        showFinishedMessage();
+    }
+}
+
+
+/* --------------------------------
+   Start 1-minute countdown
+--------------------------------- */
+function startCountdown() {
+    stopCountdown();
+
+    countdownEndTime =
+        Date.now() + COUNTDOWN_SECONDS * 1000;
+
+    countdownSection.style.display = "block";
+
+    updateCountdown();
+
+    countdownTimer = setInterval(
+        updateCountdown,
+        250
+    );
+}
+
+
+/* --------------------------------
+   Stop countdown
+--------------------------------- */
+function stopCountdown() {
+    if (countdownTimer !== null) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+
+    countdownEndTime = null;
+}
+
+
+/* --------------------------------
+   Show finished message
+--------------------------------- */
+function showFinishedMessage() {
+    countdownSection.style.display = "none";
+    paymentSection.style.display = "none";
+    finishedSection.style.display = "block";
+}
+
+
+/* --------------------------------
+   Reset QR section
+--------------------------------- */
+function clearQr() {
+    qrCode.innerHTML = "";
+    qrAmount.textContent = "";
+    qrSection.style.display = "none";
+}
+
+
+/* --------------------------------
+   Pay button
+--------------------------------- */
+payButton.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    const amount = getValidAmount();
+
+    if (amount === null) {
+        amountInput.focus();
+        return;
+    }
+
+    hideError();
+
+    /*
+     * IMPORTANT:
+     * Do NOT modify amountInput.value here.
+     *
+     * Previously the code did:
+     *
+     * amount = ceilToTwoDecimals(amount);
+     * amountInput.value = amount.toFixed(2);
+     *
+     * That is what caused values such as 1 to become 1.01.
+     */
+
+    const upiUrl = createUpiUrl(amount);
+
+    // Start payment timer.
+    startCountdown();
+
+
+    /* --------------------------------
+       MOBILE
+       Open UPI application
+    --------------------------------- */
+    if (isMobileDevice()) {
+        window.location.href = upiUrl;
+        return;
+    }
+
+
+    /* --------------------------------
+       DESKTOP
+       Show QR code
+    --------------------------------- */
+    clearQr();
+
+    qrAmount.textContent =
+        "Pay ₹" + amount.toFixed(2);
+
+    if (typeof QRCode === "undefined") {
+        showError(
+            "QR code could not be loaded. Please refresh the page and try again."
+        );
+
+        stopCountdown();
+        return;
+    }
+
+    new QRCode(qrCode, {
+        text: upiUrl,
+        width: 220,
+        height: 220,
+        correctLevel: QRCode.CorrectLevel.M
+    });
+
+    qrSection.style.display = "block";
+});
+
+
+/* --------------------------------
+   Change amount
+--------------------------------- */
+closeQr.addEventListener("click", function () {
+    clearQr();
+
+    // Stop the previous payment timer.
+    stopCountdown();
+
+    countdownSection.style.display = "none";
+
+    hideError();
+
+    amountInput.focus();
+});
+
+
+/* --------------------------------
+   Try Again
+--------------------------------- */
+tryAgain.addEventListener("click", function () {
+    stopCountdown();
+
+    finishedSection.style.display = "none";
+    paymentSection.style.display = "block";
+
+    clearQr();
+
+    countdownSection.style.display = "none";
+
+    amountInput.value = "";
+
+    hideError();
+
+    amountInput.focus();
+});
+
+
+/* --------------------------------
+   Input validation while typing
+--------------------------------- */
+amountInput.addEventListener("input", function () {
+    hideError();
+
+    /*
+     * Prevent more than 2 decimal places.
+     *
+     * Example:
+     * 10.25  -> allowed
+     * 10.256 -> becomes 10.25
+     */
+    if (this.value.includes(".")) {
+        const parts = this.value.split(".");
+
+        if (parts[1].length > 2) {
+            this.value =
+                parts[0] + "." + parts[1].slice(0, 2);
         }
+    }
+});
+
+
+/* --------------------------------
+   Prevent invalid keyboard input
+--------------------------------- */
+amountInput.addEventListener("keydown", function (event) {
+    /*
+     * Allow:
+     * - numbers
+     * - decimal point
+     * - backspace
+     * - delete
+     * - arrows
+     * - tab
+     * - home/end
+     */
+    const allowedKeys = [
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        "Tab",
+        "Home",
+        "End"
+    ];
+
+    if (
+        allowedKeys.includes(event.key) ||
+        event.ctrlKey ||
+        event.metaKey
+    ) {
+        return;
+    }
+
+    if (
+        event.key >= "0" &&
+        event.key <= "9"
+    ) {
+        return;
+    }
+
+    if (
+        event.key === "." &&
+        !this.value.includes(".")
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+});
+
+
+/* --------------------------------
+   Initial state
+--------------------------------- */
+clearQr();
+stopCountdown();
+hideError();
 
-
-        /*
-         * Round UP to exactly 2 decimal places.
-         */
-        function ceilToTwoDecimals(value) {
-
-            return Math.ceil(
-                (value + Number.EPSILON) * 100
-            ) / 100;
-
-        }
-
-
-        /*
-         * Create the UPI payment URL.
-         */
-        function createUpiUrl(amount) {
-
-            return (
-                "upi://pay" +
-                "?pa=" + encodeURIComponent("ranithsarkar@upi") +
-                "&pn=" + encodeURIComponent("RANITH SARKAR") +
-                "&am=" + encodeURIComponent(amount.toFixed(2)) +
-                "&cu=INR" +
-                "&mode=01" +
-                "&ver=01" +
-                "&txntype=pay" +
-                "&qrmedium=02"
-            );
-
-        }
-
-
-        /*
-         * Start 1-minute countdown.
-         */
-        function startCountdown() {
-
-            clearInterval(countdownTimer);
-
-            timeLeft = 60;
-
-            updateCountdown();
-
-            countdownSection.style.display = "block";
-
-            countdownTimer = setInterval(function () {
-
-                timeLeft--;
-
-                updateCountdown();
-
-                if (timeLeft <= 0) {
-
-                    clearInterval(countdownTimer);
-
-                    showFinishedMessage();
-
-                }
-
-            }, 1000);
-
-        }
-
-
-        /*
-         * Update countdown display.
-         */
-        function updateCountdown() {
-
-            const minutes =
-                Math.floor(timeLeft / 60)
-                    .toString()
-                    .padStart(2, "0");
-
-            const seconds =
-                (timeLeft % 60)
-                    .toString()
-                    .padStart(2, "0");
-
-            countdown.textContent =
-                minutes + ":" + seconds;
-
-        }
-
-
-        /*
-         * Show final message after 1 minute.
-         */
-        function showFinishedMessage() {
-
-            countdownSection.style.display = "none";
-
-            paymentSection.style.display = "none";
-
-            finishedSection.style.display = "block";
-
-        }
-
-
-        /*
-         * Pay button.
-         */
-        payButton.addEventListener("click", function (event) {
-
-            event.preventDefault();
-
-            let amount = parseFloat(amountInput.value);
-
-
-            // Check whether amount is a number.
-            if (isNaN(amount)) {
-
-                error.textContent =
-                    "Please enter a valid amount between ₹1 and ₹100,000.";
-
-                error.style.display = "block";
-
-                return;
-
-            }
-
-
-            // Round UP to 2 decimal places.
-            amount = ceilToTwoDecimals(amount);
-
-
-            // Check minimum and maximum AFTER rounding.
-            if (amount < 1 || amount > 100000) {
-
-                error.textContent =
-                    "Amount must be between ₹1 and ₹100,000.";
-
-                error.style.display = "block";
-
-                return;
-
-            }
-
-
-            // Update input with rounded value.
-            amountInput.value =
-                amount.toFixed(2);
-
-            error.style.display = "none";
-
-
-            // Create UPI URL.
-            const upiUrl =
-                createUpiUrl(amount);
-
-
-            /*
-             * Start the 1-minute countdown.
-             */
-            startCountdown();
-
-
-            /*
-             * MOBILE:
-             * Open the UPI application.
-             */
-            if (isMobileDevice()) {
-
-                window.location.href =
-                    upiUrl;
-
-                return;
-
-            }
-
-
-            /*
-             * DESKTOP:
-             * Show QR code.
-             */
-            qrCode.innerHTML = "";
-
-            qrAmount.textContent =
-                "Pay ₹" + amount.toFixed(2);
-
-            new QRCode(qrCode, {
-
-                text: upiUrl,
-                width: 220,
-                height: 220,
-                correctLevel: QRCode.CorrectLevel.M
-
-            });
-
-            qrSection.style.display =
-                "block";
-
-        });
-
-
-        /*
-         * Hide QR and allow user to change amount.
-         */
-        closeQr.addEventListener("click", function () {
-
-            qrSection.style.display =
-                "none";
-
-            amountInput.focus();
-
-        });
-
-
-        /*
-         * Try Again button.
-         * Resets everything and starts over.
-         */
-        tryAgain.addEventListener("click", function () {
-
-            clearInterval(countdownTimer);
-
-            finishedSection.style.display =
-                "none";
-
-            paymentSection.style.display =
-                "block";
-
-            qrSection.style.display =
-                "none";
-
-            countdownSection.style.display =
-                "none";
-
-            qrCode.innerHTML = "";
-
-            amountInput.value = "";
-
-            error.style.display =
-                "none";
-
-            amountInput.focus();
-
-        });
-
-
-        /*
-         * Hide error while typing.
-         */
-        amountInput.addEventListener("input", function () {
-
-            error.style.display =
-                "none";
-
-        });
 
     </script>
-
 
 </body>
 
